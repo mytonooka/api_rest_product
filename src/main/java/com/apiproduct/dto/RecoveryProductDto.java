@@ -12,7 +12,7 @@ public record RecoveryProductDto(
 
         String category,
 
-        List<CreateProductVariationDto> productVariations,
+        List<RecoveryProductVariationDto> productVariations,
 
         Boolean available
         
