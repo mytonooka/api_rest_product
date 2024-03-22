@@ -4,6 +4,8 @@ import com.apiproduct.entities.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="products")
 @Builder
@@ -24,6 +26,9 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductVariation> productVariations; //Relação adicionada
 
     private Boolean available;
 

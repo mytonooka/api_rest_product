@@ -26,4 +26,8 @@ public class ProductVariation {
 
     private BigDecimal price;
 
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product; // Relação adicionada
+
 }
