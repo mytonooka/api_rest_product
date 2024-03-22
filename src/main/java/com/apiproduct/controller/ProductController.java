@@ -1,8 +1,6 @@
 package com.apiproduct.controller;
 
-import com.apiproduct.dto.CreateProductDto;
-import com.apiproduct.dto.CreateProductVariationDto;
-import com.apiproduct.dto.RecoveryProductDto;
+import com.apiproduct.dto.*;
 import com.apiproduct.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +37,17 @@ public class ProductController {
     public ResponseEntity<RecoveryProductDto> getProductById(@PathVariable Long productId) {
 
         return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<RecoveryProductDto> updateProductPart(@PathVariable Long productId, @RequestBody UpdateProductDto updateProductDto) {
+        return new ResponseEntity<>(productService.updateProductPart(productId, updateProductDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/{productId}/variation/{productVariationId}")
+    public ResponseEntity<RecoveryProductDto> updateProductVariation(@PathVariable Long productId, @PathVariable Long productVariationId,
+                                                                     @RequestBody UpdateProductVariationDto updateProductVariationDto) {
+        return new ResponseEntity<>(productService.updateProductVariation(productId, productVariationId, updateProductVariationDto), HttpStatus.OK);
     }
 
 }

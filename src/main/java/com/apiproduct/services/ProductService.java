@@ -1,9 +1,7 @@
 package com.apiproduct.services;
 
-import com.apiproduct.dto.CreateProductDto;
-import com.apiproduct.dto.CreateProductVariationDto;
+import com.apiproduct.dto.*;
 import com.apiproduct.entities.Product;
-import com.apiproduct.dto.RecoveryProductDto;
 import com.apiproduct.entities.ProductVariation;
 import com.apiproduct.entities.enums.Category;
 import com.apiproduct.mapper.ProductMapper;
@@ -100,4 +98,77 @@ public class ProductService {
         // Retornando e mapeando os produtos para o tipo RecoveryProductDto
         return productMapper.mapProductToRecoveryProductDto(product);
     }
+
+    // Atualiza um produto (sem atualizar as variações dele)
+    public RecoveryProductDto updateProductPart(Long productId, UpdateProductDto updateProductDto) {
+        // Procura por um produto salvo no banco
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+
+        /*
+        Aqui temos uma sequência de if que serve como uma forma de programação defensiva: só altera o valor se foi passado algum valor no Json
+         */
+        if (updateProductDto.name() != null) {
+            product.setName(updateProductDto.name());
+        }
+        if (updateProductDto.description() != null) {
+            product.setDescription(updateProductDto.description());
+        }
+        if (updateProductDto.available() != null) {
+            product.setAvailable(updateProductDto.available());
+
+            /*
+            Se o produto estiver com o available = false, por padrão todas as variações do produto devem estar com available = false também,
+            porque não faria sentido o produto estar estar indisponível e as variações daquele produto estarem disponíveis
+             */
+            if (!product.getAvailable()) {
+                product.getProductVariations().forEach(productVariation -> productVariation.setAvailable(false));
+            }
+        }
+
+        // Retornando e mapeando os produtos para o tipo RecoveryProductDto
+        return productMapper.mapProductToRecoveryProductDto(productRepository.save(product));
+    }
+
+    // Método responsável por atualizar uma variação de produto
+    public RecoveryProductDto updateProductVariation(Long productId, Long productVariationId, UpdateProductVariationDto updateProductVariationDto) {
+        // Verifica se o produto existe
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Produto não encontrado."));
+
+        /*
+         Procura pela variação de produto (através do id) na lista de variações do produto
+         que já está salvo no banco
+         */
+        ProductVariation productVariation = product.getProductVariations().stream()
+                .filter(productVariationInProduct -> productVariationInProduct.getId().equals(productVariationId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Variação de produto não encontrada."));
+
+        if (updateProductVariationDto.sizeName() != null) {
+            productVariation.setSizeName(updateProductVariationDto.sizeName());
+        }
+        if (updateProductVariationDto.description() != null) {
+            productVariation.setDescription(updateProductVariationDto.description());
+        }
+        if (updateProductVariationDto.available() != null) {
+            /*
+            Se o produto estiver com o available = false, por padrão a nova variação adicionada deve estar com available = false também,
+            porque não faria sentido o produto estar estar indisponível e a variação daquele produto estar disponível
+             */
+            if (updateProductVariationDto.available() && !productVariation.getProduct().getAvailable()) {
+                throw new RuntimeException("A variação de tamanho não pode estar disponível se o produto estiver indisponível.");
+            }
+            productVariation.setAvailable(updateProductVariationDto.available());
+        }
+        if (updateProductVariationDto.price() != null) {
+            productVariation.setPrice(updateProductVariationDto.price());
+        }
+
+        // Salva um produto no banco de dados
+        Product productSaved = productRepository.save(product);
+
+        // Retornando e mapeando os produtos para o tipo RecoveryProductDto
+        return productMapper.mapProductToRecoveryProductDto(productSaved);
+    }
+
+
 }
