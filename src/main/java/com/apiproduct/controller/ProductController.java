@@ -50,4 +50,16 @@ public class ProductController {
         return new ResponseEntity<>(productService.updateProductVariation(productId, productVariationId, updateProductVariationDto), HttpStatus.OK);
     }
 
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProductById(@PathVariable Long productId) {
+        productService.deleteProductId(productId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{productId}/variation/{productVariationId}")
+    public ResponseEntity<Void> deleteProductVariationById(@PathVariable Long productId, @PathVariable Long productVariationId) {
+        productService.deleteProductVariationById(productId, productVariationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
