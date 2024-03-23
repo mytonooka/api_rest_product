@@ -12,6 +12,7 @@ import org.mapstruct.Named;
 
 import java.util.List;
 
+
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 

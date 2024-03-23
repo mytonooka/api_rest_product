@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 public record RecoveryProductVariationDto(
 
-
         Long id,
 
         String sizeName,

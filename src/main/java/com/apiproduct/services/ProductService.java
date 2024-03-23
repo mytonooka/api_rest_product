@@ -170,5 +170,24 @@ public class ProductService {
         return productMapper.mapProductToRecoveryProductDto(productSaved);
     }
 
+    // Método responsável por deletar um produto pelo id
+    public void deleteProductId(Long productId) {
+        // Verifica se o produto existe
+        if (!productRepository.existsById(productId)) {
+            throw new RuntimeException("Produto não encontrado.");
+        }
+        // Deleta um produto do banco de dados
+        productRepository.deleteById(productId);
+    }
 
+    // Método responsável por deletar uma variação de produto pelo id
+    public void deleteProductVariationById(Long productId, Long productVariationId) {
+        // Verifica se a variação de produto existe no produto em questão
+        ProductVariation productVariation = (ProductVariation) productVariationRepository
+                .findByProductIdAdProductVariationId(productId, productVariationId)
+                .orElseThrow(() -> new RuntimeException("Variação de produto não encontrada para o produto em questão."));
+
+        // Deleta a variação de produto do banco de dados
+        productVariationRepository.deleteById(productVariation.getId());
+    }
 }
